@@ -1,5 +1,6 @@
 // https://github.com/mscdex/busboy#examples
 // Parsing (multipart) with default options
+
 const http = require('http');
 
 const busboy = require('busboy');
@@ -7,7 +8,10 @@ const busboy = require('busboy');
 http.createServer((req, res) => {
   if (req.method === 'POST') {
     console.log('POST request');
-    const bb = busboy({ headers: req.headers });
+    const bb = busboy({ headers: req.headers, limits: { fields: 1, files: 1, parts: 2 } }); // <== HERE
+    bb.on('partsLimit', function () { console.log('LIMIT_PART_COUNT'); }); // <== HERE
+    bb.on('filesLimit', function () { console.log('LIMIT_FILE_COUNT'); }); // <== HERE
+    bb.on('fieldsLimit', function () { console.log('LIMIT_FIELD_COUNT'); }); // <== HERE
     bb.on('file', (name, file, info) => {
       const { filename, encoding, mimeType } = info;
       console.log(
